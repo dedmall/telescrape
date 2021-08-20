@@ -5,7 +5,7 @@ not efficient or elegant
 
 ## usage:
 
-'''{python}
+```{python}
 import telescrape as ts
 
 # pick a telegram username to scrape
@@ -16,7 +16,7 @@ df = ts.telescrape(telegram_username)
 
 # try to grab everything and save to a csv file
 ts.telescrape_loop(telegram_username)
-'''
+```
 
 ## requirements:
 * requests
