@@ -1,5 +1,7 @@
 # telescrape
-telegram media scraper
+a simple telegram media scraper to dump image urls, caption text, and timestamps into a csv
+
+not efficient or elegant
 
 ## requirements:
 * requests
