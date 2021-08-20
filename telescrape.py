@@ -61,7 +61,7 @@ def telescrape(telegram_username):
     
             #print(url,caption,datetime)
         
-            new_row = df = pd.DataFrame({'datetime': [datetime],
+            new_row = pd.DataFrame({'datetime': [datetime],
                                          'url': [url],
                                          'caption': [caption]})
         
