@@ -32,7 +32,7 @@ def telescrape(telegram_username):
     url = f'https://t.me/s/{telegram_username}'
     
     # default to a blank row if we return nothing
-    new_row = df = pd.DataFrame({'datetime': [],
+    new_row = pd.DataFrame({'datetime': [],
                                  'url': [],
                                  'caption': []})
     
