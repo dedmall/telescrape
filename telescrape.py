@@ -89,7 +89,9 @@ def telescrape_loop(telegram_username, out_file):
         new_row = pfscrape(url)
         # append to dataframe
         df = df.append(new_row, ignore_index = True)
-
+    
+    # drop any duplicate rows    
+    df.drop_duplicates(subset='datetime', inplace=True)
     # export result    
     df.to_csv(out_file)
     
