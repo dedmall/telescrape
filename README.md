@@ -5,7 +5,7 @@ not efficient or elegant
 
 ## usage:
 
-```{python}
+```python
 import telescrape as ts
 
 # pick a telegram username to scrape
