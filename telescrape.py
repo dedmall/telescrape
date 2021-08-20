@@ -27,7 +27,9 @@ def get_caption_text(div_caption):
     # return the resulting caption text
     return caption_text
   
-def telescrape(url):
+def telescrape(telegram_username):
+    
+    url = f'https://t.me/s/{telegram_username}'
     
     # default to a blank row if we return nothing
     new_row = df = pd.DataFrame({'datetime': [],
