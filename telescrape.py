@@ -91,7 +91,7 @@ def telescrape_loop(telegram_username, out_file):
         df = df.append(new_row, ignore_index = True)
 
     # export result    
-    df.save_csv(out_file)
+    df.to_csv(out_file)
     
     return None
     
