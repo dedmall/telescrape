@@ -15,7 +15,7 @@ telegram_username = 'SomeUser'
 df = ts.telescrape(telegram_username)
 
 # try to grab everything and save to a csv file
-ts.telescrape_loop(telegram_username)
+ts.telescrape_loop(telegram_username, 'SomeUser.csv')
 ```
 
 ## requirements:
