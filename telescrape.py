@@ -97,12 +97,15 @@ def telescrape_loop(telegram_username, n, n0=0, out_file=None, download_images=F
         # append to dataframe
         df = df.append(new_row, ignore_index = True)
         if download_images == True:
-            datetime_string = new_row.datetime[0].replace(':','')[:-5]
-            url_n = new_row.url[0].split('=')[-1]
-            for i, this_image_url in enumerate(new_row.image_url[0]):
-                filename = f'{image_filepath_prefix}{datetime_string}_{url_n}_{i}.jpg'
-                print('saving ', filename)
-                os.system(f'wget -O {filename} {new_row.image_url[0][i]}')
+            try:
+                datetime_string = new_row.datetime[0].replace(':','')[:-5]
+                url_n = new_row.url[0].split('=')[-1]
+                for i, this_image_url in enumerate(new_row.image_url[0]):
+                    filename = f'{image_filepath_prefix}{datetime_string}_{url_n}_{i}.jpg'
+                    print('saving ', filename)
+                    os.system(f'wget -O {filename} {new_row.image_url[0][i]}')
+            except (KeyError, IndexError):
+                pass
     
     # drop any duplicate rows    
     df.drop_duplicates(subset='datetime', inplace=True)
