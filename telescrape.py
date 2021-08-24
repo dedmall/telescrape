@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup as bs
 import re
 import pandas as pd
 import os
+import glob
 
 def get_image_url(a_image):
 
@@ -100,10 +101,13 @@ def telescrape_loop(telegram_username, n, n0=0, out_file=None, download_images=F
             try:
                 datetime_string = new_row.datetime[0].replace(':','')[:-5]
                 url_n = new_row.url[0].split('=')[-1]
-                for i, this_image_url in enumerate(new_row.image_url[0]):
-                    filename = f'{image_filepath_prefix}{datetime_string}_{url_n}_{i}.jpg'
-                    print('saving ', filename)
-                    os.system(f'wget -O {filename} {new_row.image_url[0][i]}')
+                # check if images were already downloaded
+                search_existing_images = glob.glob(f'{image_filepath_prefix}{datetime_string}_*.jpg')
+                if len(search_existing_images) == 0:
+                    for i, this_image_url in enumerate(new_row.image_url[0]):
+                        filename = f'{image_filepath_prefix}{datetime_string}_{url_n}_{i}.jpg'
+                        print('saving ', filename)
+                        os.system(f'wget -O {filename} {new_row.image_url[0][i]}')
             except (KeyError, IndexError):
                 pass
     
