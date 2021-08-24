@@ -5,16 +5,19 @@ import pandas as pd
 
 def get_image_url(a_image):
 
-    #get style string from the image anchor tag
-    style_str = a_image.attrs['style']
-    
-    # find url in style string
-    regex_search = re.compile("url\(\'(.*)\'\)")
-    matches = re.search(regex_search, style_str)
-    matching_url = matches[1]
+    url_list = []
+    for this_a_image in a_image:
+        #get style string from the image anchor tag
+        style_str = this_a_image.attrs['style']
+        
+        ## find url in style string
+        regex_search = re.compile("url\(\'(.*)\'\)")
+        matches = re.search(regex_search, style_str)
+        matching_url = matches[1]
+        url_list.append(matching_url)
 
-    # return the image url
-    return matching_url
+    # return the image urls
+    return url_list
 
 def get_caption_text(div_caption):
     # find all text not within <>
@@ -27,14 +30,12 @@ def get_caption_text(div_caption):
     # return the resulting caption text
     return caption_text
   
-def telescrape(telegram_username):
-    
-    url = f'https://t.me/s/{telegram_username}'
-    
+def telescrape(url):
+        
     # default to a blank row if we return nothing
     new_row = pd.DataFrame({'datetime': [],
-                                 'url': [],
-                                 'caption': []})
+                            'image_url': [],
+                            'caption': []})
     
     # open url
     resp = requests.get(url)
@@ -46,24 +47,27 @@ def telescrape(telegram_username):
         soup = bs(resp.text,'html.parser')    
         
         try:
+            # find message
+            div_message = soup.find("div",{"class":"tgme_widget_message"})
+            
             # find image anchor tag by class
-            a_image = soup.find("a",{"class":"tgme_widget_message_photo_wrap"})
+            a_image = div_message.find_all("a",{"class":"tgme_widget_message_photo_wrap"})
             # get the url to this image
             url = get_image_url(a_image)
     
             # find text caption
-            div_caption = soup.find("div",{"class":"tgme_widget_message_text"})
+            div_caption = div_message.find("div",{"class":"tgme_widget_message_text"})
             caption = get_caption_text(div_caption)
     
             # find the datetime of the post
-            time = soup.find("time", {"class":"time"})
+            time = div_message.find("time", {"class":"time"})
             datetime = time.attrs['datetime']
     
             #print(url,caption,datetime)
         
             new_row = pd.DataFrame({'datetime': [datetime],
-                                         'url': [url],
-                                         'caption': [caption]})
+                                    'image_url': [url],
+                                    'caption': [caption]})
         
         except AttributeError: # when we get a_image as None there's nothing to read
             pass
@@ -73,27 +77,32 @@ def telescrape(telegram_username):
         
     return new_row
   
-def telescrape_loop(telegram_username, out_file):
+def telescrape_loop(telegram_username, n, n0=0, out_file=None):
 
     # create empty dataframe
     df = pd.DataFrame({'datetime': [],
-                       'url': [],
-                       'caption': []})
+                       'image_url': [],
+                       'caption': [],
+                       'url': []})
 
     # loop through posts to scrape
-    for i in range(0,10000):
+    for i in range(n0,n+1):
         # target url 
         url = f'https://t.me/s/{telegram_username}?before={i}'
         print('scraping ', url)
         # scrape new row
-        new_row = pfscrape(url)
+        new_row = telescrape(url)
+        new_row['url'] = url
         # append to dataframe
         df = df.append(new_row, ignore_index = True)
     
     # drop any duplicate rows    
     df.drop_duplicates(subset='datetime', inplace=True)
-    # export result    
-    df.to_csv(out_file)
+    df.reset_index(inplace=True)
+    if out_file != None:
+        # export result 
+        print('saving to file', out_file)
+        df.to_csv(out_file)
     
-    return None
-    
+    return df
+
