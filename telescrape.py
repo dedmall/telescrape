@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import re
 import pandas as pd
+import os
 
 def get_image_url(a_image):
 
@@ -77,7 +78,7 @@ def telescrape(url):
         
     return new_row
   
-def telescrape_loop(telegram_username, n, n0=0, out_file=None):
+def telescrape_loop(telegram_username, n, n0=0, out_file=None, download_images=False, image_filepath_prefix=None):
 
     # create empty dataframe
     df = pd.DataFrame({'datetime': [],
@@ -95,6 +96,13 @@ def telescrape_loop(telegram_username, n, n0=0, out_file=None):
         new_row['url'] = url
         # append to dataframe
         df = df.append(new_row, ignore_index = True)
+        if download_images == True:
+            datetime_string = new_row.datetime[0].replace(':','')[:-5]
+            url_n = new_row.url[0].split('=')[-1]
+            for i, this_image_url in enumerate(new_row.image_url[0]):
+                filename = f'{image_filepath_prefix}{datetime_string}_{url_n}_{i}.jpg'
+                print('saving ', filename)
+                os.system(f'wget -O {filename} {new_row.image_url[0][i]}')
     
     # drop any duplicate rows    
     df.drop_duplicates(subset='datetime', inplace=True)
@@ -105,4 +113,4 @@ def telescrape_loop(telegram_username, n, n0=0, out_file=None):
         df.to_csv(out_file)
     
     return df
-
+    
