@@ -116,8 +116,9 @@ def telescrape_loop(telegram_username, n, n0=0, out_file=None, download_images=F
     df.reset_index(inplace=True)
     if out_file != None:
         # export result 
+        hdr = False  if os.path.isfile(out_file) else True
         print('saving to file', out_file)
-        df.to_csv(out_file)
+        df.to_csv(out_file, mode='a', header=hdr)
     
     return df
     
